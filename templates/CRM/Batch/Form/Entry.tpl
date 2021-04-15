@@ -53,9 +53,7 @@
       {foreach from=$fields item=field key=fieldName}
         {assign var=tabindex value=$tabindex+1}
         <div class="crm-grid-cell">
-          {if $field.name eq 'soft_credit'}
-          {copyIcon name='soft_credit_contact_id' title=$field.title}
-          {elseif $field.name ne 'trxn_id'}
+          {if $field.name ne 'trxn_id'}
           {copyIcon name=$field.name title=$field.title}
           {/if}{$field.title}
         </div>
@@ -214,7 +212,7 @@ CRM.$(function($) {
      e.preventDefault();
      if ($(this).find('input[id^="primary_contact_id"]').length == 1) {
        if ($(this).find('input[id^="primary_contact_id"]').val() == '') {
-         $(this).find('input[id^="primary_contact_id"]').val($(this).parent().prev().find('input[id^="primary_contact_id"]').val()).change();
+         $(this).find('input[id^="primary_contact_id"]').val($(this).parent().prev().find('input[id^="primary_contact_id"]').val()).change().focus();
        }
      }
    }
