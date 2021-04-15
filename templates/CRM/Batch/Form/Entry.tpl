@@ -53,7 +53,7 @@
       {foreach from=$fields item=field key=fieldName}
         {assign var=tabindex value=$tabindex+1}
         <div class="crm-grid-cell">
-          {if $field.name ne 'trxn_id'}
+          {if $field.name ne 'soft_credit' && $field.name ne 'trxn_id'}
           {copyIcon name=$field.name title=$field.title}
           {/if}{$field.title}
         </div>
