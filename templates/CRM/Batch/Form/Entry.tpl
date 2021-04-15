@@ -59,6 +59,11 @@
           {copyIcon name=$field.name title=$field.title}
           {/if}{$field.title}
         </div>
+        {if $field.name eq 'financial_type'}
+          <div class="crm-grid-cell">
+            {ts}Cheque Amount{/ts}
+          </div>
+        {/if}
         {if $field.name eq 'soft_credit'}
           <div class="crm-grid-cell">
             {copyIcon name='soft_credit_amount' title='Amount'}{ts}Amount{/ts}
@@ -104,6 +109,9 @@
             <div class="compressed crm-grid-cell">&nbsp;{$form.field.$rowNumber.$n.html}</div>
           {elseif $n eq 'total_amount'}
              <div class="compressed crm-grid-cell">
+                <input size="6" maxlength="14" name="cheque_amount_{$rowNumber}" type="number" value="" id=name="cheque_amount_{$rowNumber}" class="six crm-form-text" tabindex="9">
+             </div>
+             <div class="compressed crm-grid-cell">
                {$form.field.$rowNumber.$n.html}
                {if $batchType eq 3 }
 		 {ts}<span id={$rowNumber} class="pledge-adjust-option"><a href='#'>adjust payment amount</a></span>{/ts}
@@ -143,10 +151,58 @@ CRM.$(function($) {
    }
  });
  
+ $('input[id*="_total_amount"]').change(function() {
+   var contactID = $(this).parent().parent().find('input[id^="primary_contact_id"]').val();
+   var contactName = !$(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value') ? null : $(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value')[0].label;
+   var chequeAmount = 0;
+   var amount = 0;
+   $('input[id*="cheque_amount_"]').each(function(){
+     if ($(this).parent().parent().find('input[id^="primary_contact_id"]').val() == contactID && $(this).val() > 0) {
+       chequeAmount += $(this).val();
+     }
+   });
+   $('input[id*="_total_amount"]').each(function() {
+     if ($(this).parent().parent().find('input[id^="primary_contact_id"]').val() == contactID && $(this).val() > 0) {
+       amount += parseFloat($(this).val());
+     }
+   });
+   if (chequeAmount > 0 && chequeAmount < amount) {
+     $(this).val('');
+     CRM.status(ts('The total amount entered for ' + contactName + ' exceed the cheque full amount. Please correct the entry'), 'error');
+   }
+ });
+ 
+ $('input[id*="cheque_amount_"]').on('change', function() {
+   var contactID = $(this).parent().parent().find('input[id^="primary_contact_id"]').val();
+   var contactName = $(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value')[0].label;
+   var duplicateChequeAmount, amount = 0;
+   $('input[id*="cheque_amount_"]').each(function(){
+     if ($(this).parent().parent().find('input[id^="primary_contact_id"]').val() == contactID && $(this).val() > 0) {
+       duplicateChequeAmount++;
+       if (duplicateChequeAmount > 1) {
+         $(this).val('');
+       }
+     }
+   });
+   if (duplicateChequeAmount > 1) {
+     CRM.status(ts('There are more then one cheque amount entered for ' + contactName), 'error');
+   }
+   
+   $('input[id*="_total_amount"]').each(function() {
+     if ($(this).parent().parent().find('input[id^="primary_contact_id"]').val() == contactID && $(this).val() > 0) {
+       amount += parseFloat($(this).val());
+     }
+   });
+   if ($(this).val() > 0 && $(this).val() < amount) {
+     $(this).val('');
+     CRM.status(ts('The total amount entered for ' + contactName + ' exceed the cheque full amount. Please correct the cheque amount entry'), 'error');
+   }
+ });
+ 
  var c = 1;
  $('.crm-grid-row').each(function() {
    $('.crm-grid-cell', this).each(function(count) {
-     if (count == 1 || count == 2 || count == 3) {
+     if (count == 1 || count == 2 || count == 3 || count == 4) {
        $(this).children().attr('tabindex', c);
        c++;
      }
@@ -158,7 +214,6 @@ CRM.$(function($) {
      e.preventDefault();
      if ($(this).find('input[id^="primary_contact_id"]').length == 1) {
        if ($(this).find('input[id^="primary_contact_id"]').val() == '') {
-         console.log($(this).parent().prev().find('input[id^="primary_contact_id"]').val());
          $(this).find('input[id^="primary_contact_id"]').val($(this).parent().prev().find('input[id^="primary_contact_id"]').val()).change();
        }
      }
@@ -579,7 +634,6 @@ function setPledgeAmount(form, pledgeID) {
 
       // get the first element and it's value
       var firstElement = elementId.eq(0);
-      console.log(firstElement);
       var firstElementValue = firstElement.val();
 
       //check if it is date element
