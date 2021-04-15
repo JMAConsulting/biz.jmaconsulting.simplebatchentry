@@ -50,6 +50,9 @@
       {if $batchType eq 3}
         <div class="crm-grid-cell">{ts}Open Pledges (Due Date - Amount){/ts}</div>
       {/if}
+      <div class="crm-grid-cell">
+        {ts}Total Amount{/ts}
+      </div>
       {foreach from=$fields item=field key=fieldName}
         {assign var=tabindex value=$tabindex+1}
         <div class="crm-grid-cell">
@@ -57,11 +60,6 @@
           {copyIcon name=$field.name title=$field.title}
           {/if}{$field.title}
         </div>
-        {if $field.name eq 'financial_type'}
-          <div class="crm-grid-cell">
-            {ts}Cheque Amount{/ts}
-          </div>
-        {/if}
         {if $field.name eq 'soft_credit'}
           <div class="crm-grid-cell">
             {copyIcon name='soft_credit_amount' title='Amount'}{ts}Amount{/ts}
@@ -77,6 +75,9 @@
         {* contact select/create option*}
         <div class="compressed crm-grid-cell">
           {$form.primary_contact_id.$rowNumber.html|crmAddClass:big}
+        </div>
+        <div class="compressed crm-grid-cell">
+           <input size="6" maxlength="14" name="cheque_amount_{$rowNumber}" type="number" value="" id=name="cheque_amount_{$rowNumber}" class="six crm-form-text" tabindex="9">
         </div>
 
         {if $batchType eq 2}
@@ -106,9 +107,6 @@
           {elseif in_array( $fields.$n.html_type, array('Radio', 'CheckBox'))}
             <div class="compressed crm-grid-cell">&nbsp;{$form.field.$rowNumber.$n.html}</div>
           {elseif $n eq 'total_amount'}
-             <div class="compressed crm-grid-cell">
-                <input size="6" maxlength="14" name="cheque_amount_{$rowNumber}" type="number" value="" id=name="cheque_amount_{$rowNumber}" class="six crm-form-text" tabindex="9">
-             </div>
              <div class="compressed crm-grid-cell">
                {$form.field.$rowNumber.$n.html}
                {if $batchType eq 3 }
@@ -173,16 +171,14 @@ CRM.$(function($) {
  $('input[id*="cheque_amount_"]').on('change', function() {
    var contactID = $(this).parent().parent().find('input[id^="primary_contact_id"]').val();
    var contactName = $(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value')[0].label;
-   var duplicateChequeAmount, amount = 0;
+   var duplicateChequeAmount = 0, amount = 0;
    $('input[id*="cheque_amount_"]').each(function(){
      if ($(this).parent().parent().find('input[id^="primary_contact_id"]').val() == contactID && $(this).val() > 0) {
        duplicateChequeAmount++;
-       if (duplicateChequeAmount > 1) {
-         $(this).val('');
-       }
      }
    });
    if (duplicateChequeAmount > 1) {
+     $(this).val('');
      CRM.status(ts('There are more then one cheque amount entered for ' + contactName), 'error');
    }
    
@@ -208,9 +204,20 @@ CRM.$(function($) {
  });
  
  $('.crm-grid-cell').keyup(function(e) {
+   if (e.keyCode == 9) {
+     e.preventDefault();
+     e.stopPropagation();
+     if ($(this).find('input[id*="primary_contact_id"]').length == 0 &&
+        $(this).find('input[id*="cheque_amount_"]').length == 0 &&
+        $(this).find('input[id*="_total_amount"]').length == 0 &&
+        $(this).find('input[id*="_financial_type"]').length == 0
+     ) {
+       $(this).parent().next().children().eq(1).find('input').focus().attr('tabindex', -1);
+     }
+   }
    if (e.keyCode == 32) {
      e.preventDefault();
-     if ($(this).find('input[id^="primary_contact_id"]').length == 1) {
+     if ($(this).find().length == 1) {
        if ($(this).find('input[id^="primary_contact_id"]').val() == '') {
          $(this).find('input[id^="primary_contact_id"]').val($(this).parent().prev().find('input[id^="primary_contact_id"]').val()).change().focus();
        }
