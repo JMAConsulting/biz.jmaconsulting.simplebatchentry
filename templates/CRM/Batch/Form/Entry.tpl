@@ -200,17 +200,19 @@ CRM.$(function($) {
        $(this).children().attr('tabindex', c);
        c++;
      }
+     else {
+        $(this).children().removeAttr('tabindex');
+     }
    });
  });
  
  $('.crm-grid-cell').keyup(function(e) {
    if (e.keyCode == 9) {
      e.preventDefault();
-     e.stopPropagation();
      if ($(this).find('input[id*="primary_contact_id"]').length == 0 &&
         $(this).find('input[id*="cheque_amount_"]').length == 0 &&
         $(this).find('input[id*="_total_amount"]').length == 0 &&
-        $(this).find('input[id*="_financial_type"]').length == 0
+        $(this).find('select[id*="_financial_type"]').length == 0
      ) {
        $(this).parent().next().children().eq(1).find('input').focus().attr('tabindex', -1);
      }
