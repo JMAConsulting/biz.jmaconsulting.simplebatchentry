@@ -217,7 +217,7 @@ CRM.$(function($) {
    }
    if (e.keyCode == 32) {
      e.preventDefault();
-     if ($(this).find().length == 1) {
+     if ($(this).find('input[id^="primary_contact_id"]').length == 1) {
        if ($(this).find('input[id^="primary_contact_id"]').val() == '') {
          $(this).find('input[id^="primary_contact_id"]').val($(this).parent().prev().find('input[id^="primary_contact_id"]').val()).change().focus();
        }
