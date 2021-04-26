@@ -149,7 +149,7 @@ CRM.$(function($) {
  
  $('input[id*="_total_amount"]').change(function() {
    var contactID = $(this).parent().parent().find('input[id^="primary_contact_id"]').val();
-   var contactName = !$(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value') ? null : $(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value'$
+   var contactName = !$(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value') ? null : $(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value').[0].label;
    if (contactName == null) { return; }
    var chequeAmount = 0, amount = 0;
    $('input[id*="cheque_amount_"]').each(function(){
