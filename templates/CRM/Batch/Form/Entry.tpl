@@ -149,9 +149,9 @@ CRM.$(function($) {
  
  $('input[id*="_total_amount"]').change(function() {
    var contactID = $(this).parent().parent().find('input[id^="primary_contact_id"]').val();
-   var contactName = !$(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value') ? null : $(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value')[0].label;
-   var chequeAmount = 0;
-   var amount = 0;
+   var contactName = !$(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value') ? null : $(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value'$
+   if (contactName == null) { return; }
+   var chequeAmount = 0, amount = 0;
    $('input[id*="cheque_amount_"]').each(function(){
      if ($(this).parent().parent().find('input[id^="primary_contact_id"]').val() == contactID && $(this).val() > 0) {
        chequeAmount += $(this).val();
@@ -168,10 +168,10 @@ CRM.$(function($) {
    }
  });
  
- $('input[id*="cheque_amount_"]').on('change', function() {
+ $('input[id*="cheque_amount_"]').on('chang focusout', function() {
    var contactID = $(this).parent().parent().find('input[id^="primary_contact_id"]').val();
-   var contactName = $(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value')[0].label;
-   var duplicateChequeAmount = 0, amount = 0;
+   var contactName = !$(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value') ? null : $(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value')[0].label;
+   var duplicateChequeAmount = 0, amount = 0, count = 0;
    $('input[id*="cheque_amount_"]').each(function(){
      if ($(this).parent().parent().find('input[id^="primary_contact_id"]').val() == contactID && $(this).val() > 0) {
        duplicateChequeAmount++;
@@ -185,9 +185,10 @@ CRM.$(function($) {
    $('input[id*="_total_amount"]').each(function() {
      if ($(this).parent().parent().find('input[id^="primary_contact_id"]').val() == contactID && $(this).val() > 0) {
        amount += parseFloat($(this).val());
+       count++;
      }
    });
-   if ($(this).val() > 0 && $(this).val() < amount) {
+   if ($(this).val() > 0 && amount > 0 && (count == 1 && $(this).val() != amount) || (count > 2 && $(this).val() < amount)) {
      $(this).val('');
      CRM.status(ts('The total amount entered for ' + contactName + ' exceed the cheque full amount. Please correct the cheque amount entry'), 'error');
    }
