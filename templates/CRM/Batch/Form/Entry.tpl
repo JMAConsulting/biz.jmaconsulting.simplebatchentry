@@ -219,16 +219,22 @@ CRM.$(function($) {
        $(this).parent().next().children().eq(1).find('input').focus().attr('tabindex', -1);
      }
    }
+ });
+
+ $('.crm-grid-cell').keydown(function(e) {
    if (e.keyCode == 32) {
      e.preventDefault();
      if ($(this).find('input[id^="primary_contact_id"]').length == 1) {
        if ($(this).find('input[id^="primary_contact_id"]').val() == '') {
          $(this).find('input[id^="primary_contact_id"]').val($(this).parent().prev().find('input[id^="primary_contact_id"]').val()).change().focus();
+         $(this).find('input[id^="primary_contact_id"]').parent().addClass('select2-container-active');
        }
      }
+     else {
+       $(this).find('input[id^="primary_contact_id"]').parent().removeClass('select2-container-active');
+     }
    }
- })
- 
+ });
 
  $('select[id^="option_type_"]').each(function () {
     if ($(this).val() == 1) {
