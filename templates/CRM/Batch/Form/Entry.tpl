@@ -146,7 +146,7 @@ CRM.$(function($) {
      updateContactInfo(ROWID,'primary_');
    }
  });
- 
+
  $('input[id*="_total_amount"]').change(function() {
    var contactID = $(this).parent().parent().find('input[id^="primary_contact_id"]').val();
    var contactName = !$(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value') ? null : $(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value')[0].label;
@@ -167,7 +167,7 @@ CRM.$(function($) {
      CRM.status(ts('The total amount entered for ' + contactName + ' exceed the cheque full amount. Please correct the entry'), 'error');
    }
  });
- 
+
  $('input[id*="cheque_amount_"]').on('change focusout', function() {
    var contactID = $(this).parent().parent().find('input[id^="primary_contact_id"]').val();
    var contactName = !$(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value') ? null : $(this).parent().parent().find('input[id^="primary_contact_id"]').data('entity-value')[0].label;
@@ -182,7 +182,7 @@ CRM.$(function($) {
      $(this).val('');
      CRM.status(ts('There are more then one cheque amount entered for ' + contactName), 'error');
    }
-   
+
    $('input[id*="_total_amount"]').each(function() {
      if ($(this).parent().parent().find('input[id^="primary_contact_id"]').val() == contactID && $(this).val() > 0) {
        amount += parseFloat($(this).val());
@@ -194,7 +194,7 @@ CRM.$(function($) {
      CRM.status(ts('The total amount entered for ' + contactName + ' exceed the cheque full amount. Please correct the cheque amount entry'), 'error');
    }
  });
- 
+
  var c = 1;
  $('.crm-grid-row').each(function() {
    $('.crm-grid-cell', this).each(function(count) {
@@ -206,19 +206,6 @@ CRM.$(function($) {
         $(this).children().removeAttr('tabindex');
      }
    });
- });
- 
- $('.crm-grid-cell').keyup(function(e) {
-   if (e.keyCode == 9) {
-     e.preventDefault();
-     if ($(this).find('input[id*="primary_contact_id"]').length == 0 &&
-        $(this).find('input[id*="cheque_amount_"]').length == 0 &&
-        $(this).find('input[id*="_total_amount"]').length == 0 &&
-        $(this).find('select[id*="_financial_type"]').length == 0
-     ) {
-       $(this).parent().next().children().eq(1).find('input').focus().attr('tabindex', -1);
-     }
-   }
  });
 
  $('.crm-grid-cell').keydown(function(e) {
